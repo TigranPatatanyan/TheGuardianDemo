@@ -10,21 +10,20 @@
         android:id="@+id/ivThumbnail"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="80dp"
         android:layout_height="80dp"
         />
 
     <TextView
+        android:maxLines="2"
         android:layout_marginStart="8dp"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/tvTitle"
         app:layout_constraintStart_toEndOf="@id/ivThumbnail"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/tvPublicationDate"
-        android:textSize="24sp"
+        app:layout_constraintTop_toTopOf="@id/ivThumbnail"
+        android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@color/black"
         />
@@ -39,7 +38,7 @@
         app:layout_constraintTop_toBottomOf="@id/tvTitle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:textSize="16sp"
+        android:textSize="12sp"
         android:textStyle="normal"
         android:gravity="end"
         />

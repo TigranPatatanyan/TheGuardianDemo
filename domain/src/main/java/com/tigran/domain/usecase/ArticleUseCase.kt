@@ -9,7 +9,7 @@ class ArticleUseCase(
     private val localArticleRepo: LocalArticleRepo
 ) {
     suspend fun getArticles(keyword: String, page: Int, function: () -> Unit): List<Article> {
-        val articles: List<Article>? = remoteArticleRepo.searchArticles(keyword, page)
+        val articles: List<Article>? = remoteArticleRepo.searchArticles(keyword, page, pageSize = 10)
         if (articles.isNullOrEmpty()) {
             function.invoke()
             return localArticleRepo.getAllArticles()

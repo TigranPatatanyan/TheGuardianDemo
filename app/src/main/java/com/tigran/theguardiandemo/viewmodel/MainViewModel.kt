@@ -27,10 +27,7 @@ class MainViewModel(private val articleUseCase: ArticleUseCase) : ViewModel() {
             }
             withContext(Dispatchers.Main) {
                 _articles.run {
-                    val newList = mutableListOf<Article>()
-                    replayCache.takeIf { it.isNotEmpty() }?.last()?.let { newList.addAll(it) }
-                    newList.addAll(articles)
-                    emit(newList)
+                    emit(articles)
                 }
             }
         }

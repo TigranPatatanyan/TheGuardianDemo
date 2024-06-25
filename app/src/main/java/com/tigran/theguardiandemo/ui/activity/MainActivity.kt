@@ -28,11 +28,12 @@ class MainActivity : AppCompatActivity() {
         val view = binding?.root
         setContentView(view)
         setupSearchView()
+        setupRV()
 
         lifecycleScope.launch(Dispatchers.Main) {
             mainViewModel.articles.collect { articles ->
                 hideLoading()
-                fillList(articles)
+                submitList(articles)
             }
         }
         lifecycleScope.launch(Dispatchers.Main) {
@@ -44,35 +45,36 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.requestArticleData(page = 1)
     }
 
+    private fun setupRV() {
+        binding?.run {
+            val adapter = ArticleAdapter { article ->
+                navigateToArticleDetail(article)
+            }
+            val layoutManager =
+                LinearLayoutManager(applicationContext, RecyclerView.VERTICAL, false)
+            rvArticles.layoutManager = layoutManager
+            rvArticles.adapter = adapter
+            rvArticles.addOnScrollListener(object : PaginationScrollListener(layoutManager) {
+                override fun loadMoreItems() {
+                    mainViewModel.requestArticleData(
+                        (layoutManager.itemCount / 10 + 1)
+                    )
+                }
+
+                override fun isLoading(): Boolean = pbLoading.isVisible
+            })
+        }
+    }
+
     private fun showErrorToast() {
         Toast.makeText(
-            applicationContext,
-            "no network, trying  to load from cache",
-            Toast.LENGTH_SHORT
+            applicationContext, "no network, trying  to load from cache", Toast.LENGTH_SHORT
         ).show()
     }
 
-    private fun fillList(articles: List<Article>?) {
+    private fun submitList(articles: List<Article>?) {
         articles?.takeIf { it.isNotEmpty() }?.let {
-            binding?.run {
-                val adapter = ArticleAdapter(it) { article ->
-                    navigateToArticleDetail(article)
-                }
-                val layoutManager =
-                    LinearLayoutManager(applicationContext, RecyclerView.VERTICAL, false)
-                rvArticles.layoutManager = layoutManager
-                rvArticles.adapter = adapter
-                rvArticles.addOnScrollListener(object : PaginationScrollListener(layoutManager) {
-                    override fun loadMoreItems() {
-                        mainViewModel.requestArticleData(
-                            (layoutManager.itemCount / 10 + 1)
-                        )
-                    }
-
-                    override fun isLoading(): Boolean = pbLoading.isVisible
-                })
-                rvArticles.adapter?.notifyDataSetChanged()
-            }
+            (binding?.rvArticles?.adapter as? ArticleAdapter)?.addData(it)
         }
     }
 
@@ -81,6 +83,7 @@ class MainActivity : AppCompatActivity() {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 query?.let { keyword ->
                     showLoading()
+                    submitList(emptyList())
                     mainViewModel.updateSearchKeyword(keyword)
                 }
                 return false

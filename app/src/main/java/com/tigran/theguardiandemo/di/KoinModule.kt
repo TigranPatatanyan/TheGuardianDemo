@@ -8,6 +8,7 @@ import com.tigran.data.repoimpl.RemoteArticleRepoImpl
 import com.tigran.domain.repo.LocalArticleRepo
 import com.tigran.domain.repo.RemoteArticleRepo
 import com.tigran.domain.usecase.ArticleUseCase
+import com.tigran.theguardiandemo.viewmodel.ArticleDetailedViewModel
 import com.tigran.theguardiandemo.viewmodel.MainViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -19,6 +20,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 val koinModule = module {
     viewModel {
         MainViewModel(get())
+    }
+    viewModel {
+        ArticleDetailedViewModel(localArticleRepo = get(qualifier = named(LOCAL_REPO_QUALIFIER)))
     }
     factory {
         ArticleUseCase(

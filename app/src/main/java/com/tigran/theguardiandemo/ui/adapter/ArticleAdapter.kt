@@ -3,6 +3,7 @@ package com.tigran.theguardiandemo.ui.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -11,10 +12,8 @@ import com.bumptech.glide.Glide
 import com.tigran.domain.model.Article
 import com.tigran.theguardiandemo.R
 
-class ArticleAdapter(
-    private val articles: List<Article>,
-    private val onItemClick: (Article) -> Unit
-) : ListAdapter<Article, ArticleAdapter.ArticleViewHolder>(ArticleDiffCallback()) {
+class ArticleAdapter(private val onItemClick: (Article) -> Unit) :
+    ListAdapter<Article, ArticleAdapter.ArticleViewHolder>(ArticleDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_article, parent, false)
@@ -22,21 +21,23 @@ class ArticleAdapter(
     }
 
     override fun onBindViewHolder(holder: ArticleViewHolder, position: Int) {
-        holder.bind(articles[position], onItemClick)
+        holder.bind(getItem(position), onItemClick)
     }
 
     class ArticleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val tvTitle: TextView = itemView.findViewById(R.id.tvTitle)
+        private val tvPublicationDate: TextView = itemView.findViewById(R.id.tvPublicationDate)
+        private val ivThumbnail: ImageView = itemView.findViewById(R.id.ivThumbnail)
+
         fun bind(article: Article, onItemClick: (Article) -> Unit) {
-            itemView.apply {
-                findViewById<TextView>(R.id.tvTitle).text = article.title
-                findViewById<TextView>(R.id.tvPublicationDate).text = article.date
+            tvTitle.text = article.title
+            tvPublicationDate.text = article.date
 
-                Glide.with(this)
-                    .load(article.apiUrl)
-                    .into(findViewById(R.id.ivThumbnail))
+            Glide.with(itemView)
+                .load(article.thumbnail+"?api-key=test")
+                .into(ivThumbnail)
 
-                setOnClickListener { onItemClick(article) }
-            }
+            itemView.setOnClickListener { onItemClick(article) }
         }
     }
 
@@ -48,5 +49,10 @@ class ArticleAdapter(
         override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
             return oldItem == newItem
         }
+    }
+
+    // Optionally, you can add this method to add data
+    fun addData(newData: List<Article>) {
+        submitList(currentList.toMutableList().plus(newData))
     }
 }

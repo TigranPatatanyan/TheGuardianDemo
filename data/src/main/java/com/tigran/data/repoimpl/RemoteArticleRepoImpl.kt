@@ -11,7 +11,7 @@ class RemoteArticleRepoImpl(private val networkService: NewsService) : RemoteArt
         var responseList: List<ArticlePojo>?
         try {
             val response = query?.takeIf { it.isNotEmpty() }
-                ?.let { networkService.searchArticles(query, page, 10, API_KEY) }
+                ?.let { networkService.searchArticles(query, page, pageSize, API_KEY) }
                 ?: networkService.searchArticles(
                     page, pageSize,
                     API_KEY
@@ -37,7 +37,7 @@ fun List<ArticlePojo>.mapToModel(): List<Article> {
     forEach {
         newList.add(
             Article(
-                id = 0,
+                id = System.currentTimeMillis().toInt(),
                 date = it.webPublicationDate,
                 title = it.webTitle,
                 url = it.webUrl,
